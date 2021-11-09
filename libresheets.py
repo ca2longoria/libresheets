@@ -98,8 +98,6 @@ class SimpleSheets:
 			# NOTE: There's an attribute that repeats rows.  I don't know know if this
 			#   repeats data as well, but for now we'll skip ahead however many it
 			#   repeats.
-			#   
-			#   Wait a sec, it does seem to copy data across.  Huh.
 			k,v = _elattr(n,r'number-rows-repeated$')
 			repeat = k and int(v)-1 or 0
 			row += 1 + repeat
