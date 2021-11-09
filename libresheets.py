@@ -31,6 +31,12 @@ def _eldig(n,check):
 	rec(n)
 	return r
 
+def _elattr(n,xs):
+	for k in n.attrib:
+		if re.search(xs,k):
+			return (k,n.attrib[k])
+	return (None,None)
+
 class SimpleSheets:
 	'''
 	Open LibreOffice ODS spreadsheet file, and parse simple table text data.
@@ -67,10 +73,8 @@ class SimpleSheets:
 		x = 1
 		for t in _eldig(root,lambda n:re.search(r'table$',n.tag)):
 			key = 'sheet%03s' % (x,)
-			for k,v in t.attrib.items():
-				if re.search(r'name$',k):
-					key = v
-					break
+			k,v = _elattr(t,r'name$')
+			key = v and v or key
 			out[key] = dict( ( ((x,y),s) for y,x,s in self._el_cells(t) ) )
 			x += 1
 		return out
@@ -85,8 +89,20 @@ class SimpleSheets:
 				s = self._cell_text(c)
 				if s:
 					yield (row,col,s)
+					k,v = _elattr(c,'number-columns-repeated$')
+					if k:
+						for i in range(int(v)-1):
+							col += 1
+							yield (row,col,s)
 				col += 1
-			row += 1
+			# NOTE: There's an attribute that repeats rows.  I don't know know if this
+			#   repeats data as well, but for now we'll skip ahead however many it
+			#   repeats.
+			#   
+			#   Wait a sec, it does seem to copy data across.  Huh.
+			k,v = _elattr(n,r'number-rows-repeated$')
+			repeat = k and int(v)-1 or 0
+			row += 1 + repeat
 	
 	def _cell_text(self,cell):
 		''' Get text within cell (join <text/> nodes). '''
