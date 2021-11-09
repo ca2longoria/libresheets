@@ -13,6 +13,8 @@ def _eldig(n,check):
 	r = []
 	def rec(n,path=None,depth=0):
 		path = path and path or []
+		# NOTE: Yes, this is an error catch per element, and poor practice.  Saving
+		#   for later.
 		try:
 			if check(n,path,depth):
 				r.append(n)
