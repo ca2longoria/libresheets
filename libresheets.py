@@ -94,6 +94,10 @@ class SimpleSheets:
 						for i in range(int(v)-1):
 							col += 1
 							yield (row,col,s)
+				else:
+					k,v = _elattr(c,'number-columns-repeated$')
+					if k:
+						col += int(v)-1
 				col += 1
 			# NOTE: There's an attribute that repeats rows.  I don't know know if this
 			#   repeats data as well, but for now we'll skip ahead however many it
